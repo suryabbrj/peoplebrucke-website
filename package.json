@@ -1,0 +1,28 @@
+{
+  "name": "peoplebrucke-website",
+  "version": "1.0.0",
+  "description": "People Brücke — UAE people and organisational consultancy website",
+  "scripts": {
+    "build": "node build.js && node js/generate-placeholders.js",
+    "build:netlify": "npm run build && node scripts/prepare-dist.js",
+    "pack:netlify": "npm run build:netlify && node scripts/pack-dist.js",
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "netlify:dev": "netlify dev",
+    "test-smtp": "node server/test-smtp.js",
+    "share": "npx --yes localtunnel --port 3456"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "busboy": "^1.6.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "netlify-cli": "^23.0.0"
+  }
+}

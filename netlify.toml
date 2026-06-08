@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build:netlify"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = ["server/**"]
+
+[[redirects]]
+  from = "/api/careers"
+  to = "/.netlify/functions/careers"
+  status = 200
+  force = true
