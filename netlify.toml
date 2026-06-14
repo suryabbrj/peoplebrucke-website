@@ -10,6 +10,7 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   included_files = ["server/**"]
+  external_node_modules = ["@netlify/blobs", "busboy", "nodemailer"]
 
 [[redirects]]
   from = "/api/careers"

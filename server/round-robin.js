@@ -59,11 +59,17 @@ async function getNextRecipient(teamEmails) {
 
   let count;
   if (isNetlifyRuntime()) {
-    count = await readCounterBlobs();
-    const index = count % teamEmails.length;
-    const recipient = teamEmails[index];
-    await writeCounterBlobs(count + 1);
-    return recipient;
+    try {
+      count = await readCounterBlobs();
+      const index = count % teamEmails.length;
+      const recipient = teamEmails[index];
+      await writeCounterBlobs(count + 1);
+      return recipient;
+    } catch (err) {
+      console.error('Round-robin blob storage failed, using time-based fallback:', err.message);
+      const index = Math.floor(Date.now() / (60 * 60 * 1000)) % teamEmails.length;
+      return teamEmails[index];
+    }
   }
 
   count = readCounterFile();

@@ -40,7 +40,14 @@ function mapErrorMessage(err) {
   let message = 'Unable to submit your application. Please try again later or email careers@peoplebrucke.com directly.';
   if (err.message.includes('TEAM_EMAILS')) {
     message = 'Application service is not configured. Please contact careers@peoplebrucke.com directly.';
-  } else if (err.message.includes('Invalid login') || err.message.includes('BadCredentials')) {
+  } else if (err.message.includes('SMTP credentials')) {
+    message = 'Email service is not configured on the server. Please contact careers@peoplebrucke.com directly.';
+  } else if (
+    err.message.includes('Invalid login')
+    || err.message.includes('BadCredentials')
+    || err.message.includes('Username and Password not accepted')
+    || err.message.includes('EAUTH')
+  ) {
     message = 'Unable to send your application right now. Please email careers@peoplebrucke.com directly with your resume.';
   }
   return message;

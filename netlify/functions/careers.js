@@ -11,6 +11,8 @@ function parseMultipart(event) {
 
     const fields = {};
     let file = null;
+    const fileWrites = [];
+
     const busboy = Busboy({ headers: { 'content-type': contentType } });
 
     busboy.on('file', (fieldname, stream, info) => {
@@ -18,21 +20,23 @@ function parseMultipart(event) {
         stream.resume();
         return;
       }
+
       const chunks = [];
-      let size = 0;
-      stream.on('data', (chunk) => {
-        size += chunk.length;
-        chunks.push(chunk);
+      const filePromise = new Promise((resolveFile, rejectFile) => {
+        stream.on('data', (chunk) => chunks.push(chunk));
+        stream.on('error', rejectFile);
+        stream.on('end', () => {
+          const buffer = Buffer.concat(chunks);
+          file = {
+            buffer,
+            originalname: info.filename,
+            mimetype: info.mimeType,
+            size: buffer.length,
+          };
+          resolveFile();
+        });
       });
-      stream.on('end', () => {
-        const buffer = Buffer.concat(chunks);
-        file = {
-          buffer,
-          originalname: info.filename,
-          mimetype: info.mimeType,
-          size: buffer.length,
-        };
-      });
+      fileWrites.push(filePromise);
     });
 
     busboy.on('field', (name, value) => {
@@ -40,11 +44,15 @@ function parseMultipart(event) {
     });
 
     busboy.on('error', reject);
-    busboy.on('finish', () => resolve({ fields, file }));
+    busboy.on('finish', () => {
+      Promise.all(fileWrites)
+        .then(() => resolve({ fields, file }))
+        .catch(reject);
+    });
 
     const body = event.isBase64Encoded
       ? Buffer.from(event.body, 'base64')
-      : Buffer.from(event.body || '', event.isBase64Encoded ? 'binary' : 'utf8');
+      : Buffer.from(event.body || '', 'binary');
     busboy.end(body);
   });
 }
@@ -69,7 +77,7 @@ exports.handler = async (event) => {
     await handleCareersSubmission({ fields, file });
     return jsonResponse(200, { ok: true });
   } catch (err) {
-    console.error('Careers submission error:', err.message);
+    console.error('Careers submission error:', err.message, err.stack);
     const statusCode = err.statusCode || 500;
     return jsonResponse(statusCode, { error: mapErrorMessage(err) });
   }

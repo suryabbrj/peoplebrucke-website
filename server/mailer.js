@@ -5,7 +5,8 @@ function createTransport() {
   const SMTP_HOST = env('SMTP_HOST');
   const SMTP_PORT = env('SMTP_PORT');
   const SMTP_USER = env('SMTP_USER');
-  const SMTP_PASS = env('SMTP_PASS');
+  // Gmail app passwords work with or without spaces — normalize for Netlify env entry
+  const SMTP_PASS = env('SMTP_PASS').replace(/\s+/g, '');
   if (!SMTP_USER || !SMTP_PASS) {
     throw new Error('SMTP credentials are not configured');
   }
