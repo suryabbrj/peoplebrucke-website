@@ -4,3 +4,4 @@ node_modules/
 .netlify/
 peoplebrucke-site.zip
 server/data/submission-counter.json
+google-service-account.json

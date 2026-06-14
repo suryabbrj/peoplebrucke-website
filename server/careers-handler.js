@@ -1,5 +1,6 @@
 const { getNextRecipient } = require('./round-robin');
 const { sendApplicationEmail } = require('./mailer');
+const { logApplicationToSheet } = require('./google-sheet');
 const { env } = require('./env');
 
 const ALLOWED_MIME = new Set([
@@ -120,6 +121,12 @@ async function handleCareersSubmission({ fields, file }) {
     fields: emailFields,
     resume,
   });
+
+  try {
+    await logApplicationToSheet({ fields: emailFields, resume, recipient });
+  } catch (err) {
+    console.error('Google Sheet logging failed:', err.message);
+  }
 
   return { ok: true };
 }

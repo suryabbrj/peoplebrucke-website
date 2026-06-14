@@ -48,6 +48,10 @@ Copy from your `.env`:
 | `SMTP_USER` | Sender email / SMTP username |
 | `SMTP_PASS` | SMTP password or app password |
 | `MAIL_FROM` | From address shown on emails |
+| `GOOGLE_SHEET_ID` | *(Optional)* Spreadsheet ID for application log |
+| `GOOGLE_DRIVE_FOLDER_ID` | *(Optional)* Drive folder ID for uploaded resumes |
+| `GOOGLE_SHEET_TAB` | *(Optional)* Sheet tab name (default: `Applications`) |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | *(Optional)* Service account JSON key (Netlify — paste full JSON) |
 
 The form posts to `/api/careers`, which Netlify proxies to the `careers` serverless function. Round-robin state is stored in **Netlify Blobs** (no file system needed).
 
@@ -77,6 +81,53 @@ The careers page includes a structured application form with resume upload. Subm
 3. Run `npm run test-smtp` to verify
 
 Locally, the round-robin counter is stored in `server/data/submission-counter.json` (gitignored). On Netlify, it uses Netlify Blobs.
+
+### Google Sheet log (optional)
+
+Each submission can append a row to a master Google Sheet with all form fields and a **clickable resume link** (file stored in Google Drive).
+
+**One-time setup (~10 min):**
+
+1. **Google Cloud** — [console.cloud.google.com](https://console.cloud.google.com)
+   - Create a project (or use an existing one)
+   - Enable **Google Sheets API** and **Google Drive API**
+   - **IAM → Service accounts → Create** → download the JSON key file
+   - Copy the service account email (e.g. `something@project.iam.gserviceaccount.com`)
+
+2. **Google Sheet**
+   - Create a spreadsheet (your master applications sheet)
+   - Add a tab named `Applications` (or set `GOOGLE_SHEET_TAB` to your tab name)
+   - **Share the sheet** with the service account email as **Editor**
+   - Copy the spreadsheet ID from the URL:  
+     `https://docs.google.com/spreadsheets/d/`**`THIS_PART`**`/edit`
+
+3. **Google Drive folder** (for resume files)
+   - Create a folder e.g. “Careers Resumes”
+   - **Share the folder** with the service account email as **Editor**
+   - Copy the folder ID from the URL:  
+     `https://drive.google.com/drive/folders/`**`THIS_PART`**
+
+4. **Local `.env`**
+   ```env
+   GOOGLE_SHEET_ID=your-spreadsheet-id
+   GOOGLE_DRIVE_FOLDER_ID=your-folder-id
+   GOOGLE_SHEET_TAB=Applications
+   GOOGLE_SERVICE_ACCOUNT_PATH=./google-service-account.json
+   ```
+   Save the downloaded JSON as `google-service-account.json` in the project root (gitignored).
+
+5. **Netlify** — add the same IDs plus `GOOGLE_SERVICE_ACCOUNT_JSON` (paste the entire JSON key as the value). Scope: **Functions**.
+
+6. **Test**
+   ```bash
+   npm run test-google-sheet
+   ```
+
+Sheet columns (header row is created automatically on first submission):
+
+`Submitted At | First Name | Last Name | Email | Phone | Location | LinkedIn | Area of Interest | Experience | Message | Resume Link | Routed To`
+
+If Google Sheet env vars are not set, the form still works — email delivery is unchanged; sheet logging is skipped.
 
 ## Rebuild content
 
