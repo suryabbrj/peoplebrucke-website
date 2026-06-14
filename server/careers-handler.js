@@ -1,5 +1,6 @@
 const { getNextRecipient } = require('./round-robin');
 const { sendApplicationEmail } = require('./mailer');
+const { env } = require('./env');
 
 const ALLOWED_MIME = new Set([
   'application/pdf',
@@ -10,7 +11,7 @@ const ALLOWED_EXT = ['.pdf', '.doc', '.docx'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 function getTeamEmails() {
-  const raw = process.env.TEAM_EMAILS || '';
+  const raw = env('TEAM_EMAILS');
   return raw.split(',').map((e) => e.trim()).filter(Boolean);
 }
 

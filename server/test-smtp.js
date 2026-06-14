@@ -1,7 +1,9 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
+const { env } = require('./env');
 
-const { SMTP_USER, SMTP_PASS } = process.env;
+const SMTP_USER = env('SMTP_USER');
+const SMTP_PASS = env('SMTP_PASS');
 
 if (!SMTP_USER || !SMTP_PASS) {
   console.error('Missing SMTP_USER or SMTP_PASS in .env');
@@ -10,8 +12,8 @@ if (!SMTP_USER || !SMTP_PASS) {
 
 const transport = nodemailer.createTransport({
   service: SMTP_USER.endsWith('@gmail.com') ? 'gmail' : undefined,
-  host: SMTP_USER.endsWith('@gmail.com') ? undefined : process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
+  host: SMTP_USER.endsWith('@gmail.com') ? undefined : env('SMTP_HOST'),
+  port: Number(env('SMTP_PORT')) || 587,
   auth: { user: SMTP_USER, pass: SMTP_PASS },
 });
 

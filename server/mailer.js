@@ -1,7 +1,11 @@
 const nodemailer = require('nodemailer');
+const { env } = require('./env');
 
 function createTransport() {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+  const SMTP_HOST = env('SMTP_HOST');
+  const SMTP_PORT = env('SMTP_PORT');
+  const SMTP_USER = env('SMTP_USER');
+  const SMTP_PASS = env('SMTP_PASS');
   if (!SMTP_USER || !SMTP_PASS) {
     throw new Error('SMTP credentials are not configured');
   }
@@ -55,7 +59,7 @@ function buildEmailHtml(fields) {
 
 async function sendApplicationEmail({ recipient, fields, resume }) {
   const transport = createTransport();
-  const from = process.env.MAIL_FROM || 'careers@peoplebrucke.com';
+  const from = env('MAIL_FROM') || env('SMTP_USER') || 'careers@peoplebrucke.com';
   const name = `${fields['First name'] || ''} ${fields['Last name'] || ''}`.trim() || 'Applicant';
 
   await transport.sendMail({

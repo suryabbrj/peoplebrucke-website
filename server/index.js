@@ -4,9 +4,10 @@ const path = require('path');
 const express = require('express');
 const multer = require('multer');
 const { handleCareersSubmission, mapErrorMessage } = require('./careers-handler');
+const { env } = require('./env');
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3456;
+const PORT = Number(env('PORT')) || 3456;
 const ROOT = path.join(__dirname, '..');
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 

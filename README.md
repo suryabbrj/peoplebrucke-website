@@ -43,10 +43,10 @@ Copy from your `.env`:
 | Variable | Description |
 |----------|-------------|
 | `TEAM_EMAILS` | Comma-separated round-robin recipients |
-| `SMTP_HOST` | `smtp.gmail.com` for Gmail |
-| `SMTP_PORT` | `587` |
-| `SMTP_USER` | Sender email |
-| `SMTP_PASS` | Gmail App Password (with spaces if generated that way) |
+| `SMTP_HOST` | Your SMTP server hostname |
+| `SMTP_PORT` | SMTP port (often 587) |
+| `SMTP_USER` | Sender email / SMTP username |
+| `SMTP_PASS` | SMTP password or app password |
 | `MAIL_FROM` | From address shown on emails |
 
 The form posts to `/api/careers`, which Netlify proxies to the `careers` serverless function. Round-robin state is stored in **Netlify Blobs** (no file system needed).
