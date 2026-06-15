@@ -101,19 +101,19 @@ main,
 
 .site-header__logo svg {
   height: auto;
-  width: 70px;
+  width: 105px;
 }
 
 .site-header__logo-image {
   display: block;
   height: auto;
-  width: 73px;
+  width: 110px;
 }
 
 .site-header__logo-wordmark {
   display: inline-block;
   font-family: EnvoyMonumentGrotesk, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: clamp(1.89rem, 1.15vw + 1.4rem, 2.35rem);
+  font-size: clamp(2.8rem, 1.8vw + 2rem, 3.5rem);
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1;
@@ -438,15 +438,15 @@ body.menu-open {
 }
 
 .site-header__container {
-  height: 44px;
-  top: 14px;
+  height: 60px; /* was 53px */
+  top: 10px; /* was 14px */
   transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media only screen and (min-width: 768px) {
   .site-header__container {
-    height: 48px;
-    top: 18px;
+    height: 68px; /* was 58px */
+    top: 14px; /* was 18px */
   }
 
   .site-header__menu,
@@ -460,12 +460,26 @@ body.menu-open {
   .site-header__menu-item,
   .site-header__menu-sticky-item {
     flex: 0 1 auto;
-    font-size: clamp(1.12rem, 0.58vw + 0.82rem, 1.62rem);
+    font-size: clamp(1.3rem, 0.78vw + 0.95rem, 1.85rem); /* was clamp(1.12rem, 0.58vw + 0.82rem, 1.62rem) */
     letter-spacing: -0.01em;
     line-height: 1.2;
     margin: 0;
     min-width: 0;
     white-space: nowrap;
+    opacity: 0.55 !important; /* was 0.3, improved readability */
+    transition: opacity 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  }
+
+  .site-header__menu-item:hover,
+  .site-header__menu-sticky-item:hover {
+    opacity: 1 !important;
+    transform: translateY(-1px);
+  }
+
+  .site-header__menu-item.active,
+  .site-header__menu-sticky-item.active {
+    opacity: 1 !important;
+    transform: scale(1.05);
   }
 
   .site-header__menu-item a,
@@ -474,13 +488,40 @@ body.menu-open {
     font-size: inherit;
     line-height: inherit;
     white-space: nowrap;
+    transition: color 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  /* Accent highlight on light headers */
+  body[data-header-theme="dark"] .site-header:not(.site-header--menu-open) .site-header__menu-item.active a {
+    color: var(--pb-primary) !important;
+  }
+
+  /* Accent highlight on dark headers */
+  body:not([data-header-theme="dark"]) .site-header:not(.site-header--menu-open) .site-header__menu-item.active a {
+    color: var(--pb-primary-bright) !important;
+  }
+
+  /* Active line highlight under nav items */
+  .site-header__menu-item.active .link--underline:after,
+  .site-header__menu-sticky-item.active .link--underline:after {
+    left: 0 !important;
+    right: auto !important;
+    width: 100% !important;
+  }
+
+  body[data-header-theme="dark"] .site-header:not(.site-header--menu-open) .site-header__menu-item.active .link--underline:after {
+    background-color: var(--pb-primary) !important;
+  }
+
+  body:not([data-header-theme="dark"]) .site-header:not(.site-header--menu-open) .site-header__menu-item.active .link--underline:after {
+    background-color: var(--pb-primary-bright) !important;
   }
 }
 
 @media only screen and (min-width: 992px) {
   .site-header__container {
-    height: 52px;
-    top: 20px;
+    height: 75px; /* was 62px */
+    top: 16px; /* was 20px */
   }
 
   .site-header__menu-bar .site-header__logo {
@@ -593,6 +634,25 @@ body.menu-open {
 .section--light {
   position: relative;
   z-index: 2;
+}
+
+/* ── Section CTA (Join Our Workforce) ── */
+.section-cta {
+  background-color: var(--pb-bg-dark);
+  position: relative;
+  z-index: 2;
+}
+
+.section-cta .eyebrow {
+  color: var(--pb-primary-bright) !important;
+}
+
+.section-cta .copy-block__title {
+  color: #ffffff !important;
+}
+
+.section-cta .copy-block__description {
+  color: var(--pb-primary-muted-dark) !important;
 }
 
 /* ── Mission ── */
@@ -1089,4 +1149,57 @@ body.menu-open {
 .careers-form--submitted .careers-form__grid,
 .careers-form--submitted .careers-form__actions {
   display: none;
+}
+
+/* ── Autocomplete Combobox styles ── */
+.careers-form__combobox {
+  position: relative;
+  width: 100%;
+}
+
+.careers-form__combobox .careers-form__input {
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%230a2547' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 14px center;
+  background-repeat: no-repeat;
+}
+
+.combobox-dropdown {
+  background: var(--pb-bg-white);
+  border: 1px solid rgba(10, 37, 71, 0.18);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(10, 37, 71, 0.08);
+  max-height: 240px;
+  overflow-y: auto;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.combobox-dropdown[hidden] {
+  display: none !important;
+}
+
+.combobox-option {
+  color: var(--pb-text-dark);
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 10px 14px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  text-align: left;
+}
+
+.combobox-option:hover,
+.combobox-option.focused {
+  background-color: var(--pb-primary-light);
+  color: var(--pb-primary);
+}
+
+.combobox-option.custom-option {
+  border-top: 1px solid rgba(10, 37, 71, 0.08);
+  font-style: italic;
+  color: var(--pb-primary);
+  font-weight: 500;
 }

@@ -66,7 +66,7 @@ async function sendApplicationEmail({ recipient, fields, resume }) {
   await transport.sendMail({
     from,
     to: recipient,
-    subject: `New Careers Application — ${name}`,
+    subject: `New Careers Application [ID: ${fields['Application ID']}] — ${name}`,
     text: Object.entries(fields).map(([k, v]) => `${k}: ${v || '—'}`).join('\n'),
     html: buildEmailHtml(fields),
     attachments: resume

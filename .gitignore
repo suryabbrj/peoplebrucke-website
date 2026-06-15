@@ -5,3 +5,4 @@ node_modules/
 peoplebrucke-site.zip
 server/data/submission-counter.json
 google-service-account.json
+server/application-id-counter.txt

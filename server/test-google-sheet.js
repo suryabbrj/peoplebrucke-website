@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { isConfigured, logApplicationToSheet } = require('./google-sheet');
+const { isConfigured, logApplicationToSheet, getNextApplicationId } = require('./google-sheet');
 
 async function main() {
   if (!isConfigured()) {
@@ -9,34 +9,45 @@ async function main() {
     process.exit(1);
   }
 
+  const applicationCode = await getNextApplicationId();
   const fields = {
+    'Application ID': applicationCode,
     'First name': 'Test',
     'Last name': 'Applicant',
     Email: 'test@example.com',
     Phone: '+971 50 000 0000',
-    Location: 'Dubai',
+    City: 'Dubai',
+    Country: 'UAE',
+    Nationality: 'Emirati',
+    Designation: 'AI/ML Engineer',
     LinkedIn: 'https://linkedin.com/in/example',
-    'Area of interest': 'Consulting',
+    'Area of interest': 'Artificial Intelligence and Technology',
     Experience: '5 years',
     Message: 'Google Sheet integration test row — safe to delete.',
   };
 
-  const resume = {
-    originalname: 'test-resume.pdf',
-    mimetype: 'application/pdf',
-    buffer: Buffer.from('%PDF-1.4 test'),
-  };
-
   await logApplicationToSheet({
     fields,
-    resume,
     recipient: 'test@example.com',
   });
 
-  console.log('Google Sheet test row added successfully.');
+  console.log(`Google Sheet test row added successfully with Application ID: ${applicationCode}`);
 }
 
 main().catch((err) => {
   console.error('Google Sheet test failed:', err.message);
+  if (err.message.includes('storage quota') || err.message.includes('403')) {
+    console.error('\nShare your Google Drive folder AND spreadsheet with this service account as Editor:');
+    const fs = require('fs');
+    const path = require('path');
+    const keyPath = process.env.GOOGLE_SERVICE_ACCOUNT_PATH || './google-service-account.json';
+    const resolved = path.isAbsolute(keyPath)
+      ? keyPath
+      : path.join(__dirname, '..', keyPath.replace(/^\.\//, ''));
+    if (fs.existsSync(resolved)) {
+      const email = JSON.parse(fs.readFileSync(resolved, 'utf8')).client_email;
+      console.error(`  ${email}`);
+    }
+  }
   process.exit(1);
 });

@@ -14,6 +14,7 @@
   const dropzone = document.getElementById('resume-dropzone');
   const fileNameEl = document.getElementById('resume-file-name');
 
+
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -44,6 +45,7 @@
     clearErrors();
     form.reset();
     updateFileDisplay(null);
+
     const firstField = form.querySelector('#firstName');
     if (firstField) firstField.focus();
   }
@@ -95,7 +97,7 @@
     clearErrors();
     let valid = true;
 
-    const required = ['firstName', 'lastName', 'email', 'phone', 'location', 'area', 'experience', 'message'];
+    const required = ['firstName', 'lastName', 'email', 'phoneCode', 'phone', 'city', 'country', 'nationality', 'designation', 'area', 'experience'];
     required.forEach((name) => {
       const el = form.elements[name];
       const value = el && el.value ? el.value.trim() : '';
@@ -104,6 +106,8 @@
         valid = false;
       }
     });
+
+
 
     const email = form.elements.email.value.trim();
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -172,6 +176,139 @@
   if (submitAnotherBtn) {
     submitAnotherBtn.addEventListener('click', resetFormForAnother);
   }
+
+  function initCombobox(inputId, dropdownId) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+
+    const originalOptions = Array.from(dropdown.querySelectorAll('.combobox-option')).map(opt => opt.getAttribute('data-value'));
+    let focusedIndex = -1;
+
+    function renderOptions(filterText) {
+      dropdown.innerHTML = '';
+      const text = filterText.trim().toLowerCase();
+      let matches = [];
+
+      originalOptions.forEach(optVal => {
+        if (!text || optVal.toLowerCase().includes(text)) {
+          matches.push(optVal);
+        }
+      });
+
+      // Render standard matching options
+      matches.forEach(optVal => {
+        const div = document.createElement('div');
+        div.className = 'combobox-option';
+        div.setAttribute('data-value', optVal);
+        div.textContent = optVal;
+        dropdown.appendChild(div);
+      });
+
+      // If user typed something not matching exactly, and not empty, show "Use custom" option
+      const hasExactMatch = originalOptions.some(optVal => optVal.toLowerCase() === text);
+      if (text && !hasExactMatch) {
+        const customDiv = document.createElement('div');
+        customDiv.className = 'combobox-option custom-option';
+        customDiv.setAttribute('data-value', filterText.trim());
+        customDiv.textContent = `Use custom: "${filterText.trim()}"`;
+        dropdown.appendChild(customDiv);
+      }
+
+      const visibleOptions = dropdown.querySelectorAll('.combobox-option');
+      dropdown.hidden = visibleOptions.length === 0;
+      focusedIndex = -1;
+    }
+
+    function selectOption(value) {
+      input.value = value;
+      dropdown.hidden = true;
+      focusedIndex = -1;
+      setFieldError(inputId, ''); // Clear errors when selection happens
+    }
+
+    function moveFocus(direction) {
+      const options = dropdown.querySelectorAll('.combobox-option');
+      if (options.length === 0) return;
+
+      if (focusedIndex >= 0 && focusedIndex < options.length) {
+        options[focusedIndex].classList.remove('focused');
+      }
+
+      if (direction === 'down') {
+        focusedIndex = (focusedIndex + 1) % options.length;
+      } else {
+        focusedIndex = (focusedIndex - 1 + options.length) % options.length;
+      }
+
+      const activeOpt = options[focusedIndex];
+      activeOpt.classList.add('focused');
+      activeOpt.scrollIntoView({ block: 'nearest' });
+    }
+
+    input.addEventListener('focus', () => {
+      renderOptions(input.value);
+    });
+
+    input.addEventListener('input', () => {
+      renderOptions(input.value);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (dropdown.hidden) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          renderOptions(input.value);
+          e.preventDefault();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        moveFocus('down');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        moveFocus('up');
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const options = dropdown.querySelectorAll('.combobox-option');
+        if (focusedIndex >= 0 && focusedIndex < options.length) {
+          selectOption(options[focusedIndex].getAttribute('data-value'));
+        }
+      } else if (e.key === 'Escape') {
+        dropdown.hidden = true;
+        focusedIndex = -1;
+      }
+    });
+
+    // Handle clicking options
+    dropdown.addEventListener('click', (e) => {
+      const option = e.target.closest('.combobox-option');
+      if (option) {
+        selectOption(option.getAttribute('data-value'));
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.hidden = true;
+        focusedIndex = -1;
+      }
+    });
+
+    // Close on blur (delayed to allow clicks)
+    input.addEventListener('blur', () => {
+      setTimeout(() => {
+        dropdown.hidden = true;
+        focusedIndex = -1;
+      }, 200);
+    });
+  }
+
+  // Initialize both autocomplete comboboxes
+  initCombobox('area', 'area-dropdown');
+  initCombobox('designation', 'designation-dropdown');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

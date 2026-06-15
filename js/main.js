@@ -310,29 +310,143 @@
   /* ── Nav active state from current page ── */
   function initNavActive() {
     const items = document.querySelectorAll('.site-header__menu-item');
-    const currentPage = document.body.dataset.page;
+    const pageType = document.body.dataset.page; // 'Home' or 'Careers'
+    let currentActiveSection = pageType;
 
-    items.forEach((item) => {
-      const isCurrent = item.dataset.toPage === currentPage;
-      item.classList.toggle('active', isCurrent);
-      const link = item.querySelector('a');
-      if (link) {
-        if (isCurrent) link.setAttribute('aria-current', 'page');
-        else link.removeAttribute('aria-current');
-      }
-    });
+    // Define helper to apply active class
+    function applyActiveState(activePage) {
+      items.forEach((item) => {
+        const isCurrent = item.dataset.toPage === activePage;
+        item.classList.toggle('active', isCurrent);
+        const link = item.querySelector('a');
+        if (link) {
+          if (isCurrent) link.setAttribute('aria-current', 'page');
+          else link.removeAttribute('aria-current');
+        }
+      });
+    }
 
+    // Initialize state
+    applyActiveState(currentActiveSection);
+
+    // Mouse hover behaviors
     items.forEach((item) => {
       item.addEventListener('mouseenter', () => {
         items.forEach((i) => i.classList.remove('active'));
         item.classList.add('active');
       });
       item.addEventListener('mouseleave', () => {
-        items.forEach((i) => {
-          const isCurrent = i.dataset.toPage === currentPage;
-          i.classList.toggle('active', isCurrent);
-        });
+        applyActiveState(currentActiveSection);
       });
+    });
+
+    // Scroll spy (only on homepage)
+    if (pageType === 'Home') {
+      const sections = [
+        { id: 'top', page: 'Home' },
+        { id: 'mission', page: 'Mission' },
+        { id: 'problem', page: 'Problem' },
+        { id: 'process', page: 'Process' },
+        { id: 'join-team', page: 'Careers' },
+        { id: 'contact', page: 'Contact' }
+      ];
+
+      const sectionElements = sections.map(sec => {
+        return {
+          page: sec.page,
+          el: sec.id === 'top' ? document.getElementById('top') : document.getElementById(sec.id)
+        };
+      }).filter(sec => sec.el !== null);
+
+      function updateActiveSection() {
+        let activePage = 'Home';
+        const scrollPosition = window.scrollY;
+        const headerHeight = isNarrow() ? 62 : 75;
+        const threshold = scrollPosition + headerHeight + 120; // trigger check
+
+        // Check if we are near the bottom of the page
+        const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 120);
+
+        if (isAtBottom) {
+          activePage = 'Contact';
+        } else {
+          for (let i = 0; i < sectionElements.length; i++) {
+            const sec = sectionElements[i];
+            if (sec.page === 'Home') continue;
+            
+            // Get section top position relative to document
+            const sectionTop = sec.el.offsetTop;
+            if (threshold >= sectionTop) {
+              activePage = sec.page;
+            }
+          }
+        }
+
+        if (currentActiveSection !== activePage) {
+          currentActiveSection = activePage;
+          // Only update elements if the user is not currently hovering over the menu
+          const isHovering = siteHeader.classList.contains('site-header--menu-item-hovered');
+          if (!isHovering) {
+            applyActiveState(currentActiveSection);
+          }
+        }
+      }
+
+      window.addEventListener('scroll', updateActiveSection, { passive: true });
+      window.addEventListener('resize', updateActiveSection);
+      window.addEventListener('load', updateActiveSection);
+      updateActiveSection();
+    }
+  }
+
+  /* ── Page scroll nudge cue on load ── */
+  function initScrollNudge() {
+    if (window.scrollY > 10) return;
+
+    function smoothScrollTo(targetY, duration) {
+      const startY = window.scrollY;
+      const difference = targetY - startY;
+      const startTime = performance.now();
+
+      function easeInOutQuad(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return (c / 2) * t * t + b;
+        t--;
+        return (-c / 2) * (t * (t - 2) - 1) + b;
+      }
+
+      return new Promise((resolve) => {
+        function step(currentTime) {
+          const timeElapsed = currentTime - startTime;
+          if (timeElapsed < duration) {
+            window.scrollTo(0, easeInOutQuad(timeElapsed, startY, difference, duration));
+            requestAnimationFrame(step);
+          } else {
+            window.scrollTo(0, targetY);
+            resolve();
+          }
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    window.addEventListener('load', () => {
+      if (window.scrollY > 10) return;
+
+      setTimeout(async () => {
+        if (window.scrollY > 10) return;
+
+        // Smooth scroll down slightly (1000ms duration)
+        await smoothScrollTo(80, 1000);
+
+        // Pause for 600ms
+        setTimeout(async () => {
+          // Only scroll back if the user has not scrolled manually further down
+          if (window.scrollY < 120) {
+            await smoothScrollTo(0, 900);
+          }
+        }, 600);
+      }, 1500); // Delay before nudge starts
     });
   }
 
@@ -346,4 +460,5 @@
   initMenuHover();
   initFooterSpacer();
   initNavActive();
+  initScrollNudge();
 })();

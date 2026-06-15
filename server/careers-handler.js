@@ -1,6 +1,6 @@
 const { getNextRecipient } = require('./round-robin');
 const { sendApplicationEmail } = require('./mailer');
-const { logApplicationToSheet } = require('./google-sheet');
+const { logApplicationToSheet, getNextApplicationId } = require('./google-sheet');
 const { env } = require('./env');
 
 const ALLOWED_MIME = new Set([
@@ -59,10 +59,16 @@ async function handleCareersSubmission({ fields, file }) {
     firstName,
     lastName,
     email,
+    phoneCode,
     phone,
-    location,
-    linkedin,
+    city,
+    country,
+    nationality,
+    designation,
+    designationCustom,
     area,
+    areaCustom,
+    linkedin,
     experience,
     message,
     consent,
@@ -76,9 +82,23 @@ async function handleCareersSubmission({ fields, file }) {
   }
 
   if (!requiredField(firstName) || !requiredField(lastName) || !requiredField(email)
-    || !requiredField(phone) || !requiredField(location) || !requiredField(area)
-    || !requiredField(experience) || !requiredField(message) || consent !== 'yes') {
+    || !requiredField(phoneCode) || !requiredField(phone) || !requiredField(city)
+    || !requiredField(country) || !requiredField(nationality) || !requiredField(designation)
+    || !requiredField(area) || !requiredField(experience)
+    || consent !== 'yes') {
     const error = new Error('Please complete all required fields.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (area === 'Custom' && !requiredField(areaCustom)) {
+    const error = new Error('Please specify your area of interest.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (designation === 'Custom' && !requiredField(designationCustom)) {
+    const error = new Error('Please specify your designation.');
     error.statusCode = 400;
     throw error;
   }
@@ -98,35 +118,48 @@ async function handleCareersSubmission({ fields, file }) {
   const teamEmails = getTeamEmails();
   const recipient = await getNextRecipient(teamEmails);
 
+  const applicationCode = await getNextApplicationId();
+
+  const finalPhone = `${phoneCode.trim()} ${phone.trim()}`;
+  const finalArea = (area === 'Custom' && areaCustom) ? areaCustom.trim() : area.trim();
+  const finalDesignation = (designation === 'Custom' && designationCustom) ? designationCustom.trim() : designation.trim();
+
   const emailFields = {
+    'Application ID': applicationCode,
     'First name': firstName.trim(),
     'Last name': lastName.trim(),
     Email: email.trim(),
-    Phone: phone.trim(),
-    Location: location.trim(),
+    Phone: finalPhone,
+    City: city.trim(),
+    Country: country.trim(),
+    Nationality: nationality.trim(),
+    Designation: finalDesignation,
+    'Area of interest': finalArea,
     LinkedIn: linkedin?.trim() || '',
-    'Area of interest': area.trim(),
     Experience: experience.trim(),
-    Message: message.trim(),
+    Message: message ? message.trim() : '',
   };
 
+  const extension = getExtension(file.originalname || file.name || 'resume.pdf');
+  const uniqueFilename = `${applicationCode}${extension}`;
+
   const resume = {
-    originalname: file.originalname || file.name || 'resume',
+    originalname: uniqueFilename,
     mimetype: file.mimetype || file.type || 'application/octet-stream',
     buffer: file.buffer,
   };
 
+  // Trigger Google Sheet logging in the background (non-blocking)
+  logApplicationToSheet({ fields: emailFields, recipient }).catch((err) => {
+    console.error('Background Google Sheet logging failed:', err.message);
+  });
+
+  // Await the email send to guarantee delivery notification to the client
   await sendApplicationEmail({
     recipient,
     fields: emailFields,
     resume,
   });
-
-  try {
-    await logApplicationToSheet({ fields: emailFields, resume, recipient });
-  } catch (err) {
-    console.error('Google Sheet logging failed:', err.message);
-  }
 
   return { ok: true };
 }

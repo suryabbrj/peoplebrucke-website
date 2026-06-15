@@ -110,7 +110,7 @@
 
         <section class="section-careers-form section--light">
           <div class="container container--offset">
-            <div class="reveal" data-revealed="false">
+            <div>
               <form class="careers-form" id="careers-form" action="/api/careers" method="post" enctype="multipart/form-data" novalidate>
                 <div class="careers-form__status" id="careers-form-status" role="status" aria-live="polite" hidden>
                   <p class="careers-form__status-message" id="careers-form-status-message"></p>
@@ -135,28 +135,67 @@
                   </div>
                   <div class="careers-form__field">
                     <label class="careers-form__label" for="phone">Phone <span aria-hidden="true">*</span></label>
-                    <input class="careers-form__input" type="tel" id="phone" name="phone" autocomplete="tel" required>
+                    <div style="display: flex; gap: 8px;">
+                      <select class="careers-form__input careers-form__select" id="phoneCode" name="phoneCode" style="flex: 0 0 110px; min-width: 110px; padding: 12px 8px;" required>
+                        <option value="+971" selected>+971 (UAE)</option>
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+966">+966 (SA)</option>
+                        <option value="+965">+965 (KW)</option>
+                        <option value="+968">+968 (OM)</option>
+                        <option value="+973">+973 (BH)</option>
+                        <option value="+974">+974 (QA)</option>
+                        <option value="+1">+1 (US/CA)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+65">+65 (SG)</option>
+                        <option value="+61">+61 (AU)</option>
+                        <option value="+33">+33 (FR)</option>
+                        <option value="+49">+49 (DE)</option>
+                      </select>
+                      <input class="careers-form__input" type="tel" id="phone" name="phone" placeholder="50 123 4567" style="flex: 1;" autocomplete="tel" required>
+                    </div>
                     <span class="careers-form__error" data-error-for="phone"></span>
                   </div>
+                  <div class="careers-form__field">
+                    <label class="careers-form__label" for="city">City <span aria-hidden="true">*</span></label>
+                    <input class="careers-form__input" type="text" id="city" name="city" placeholder="e.g. Dubai" required>
+                    <span class="careers-form__error" data-error-for="city"></span>
+                  </div>
+                  <div class="careers-form__field">
+                    <label class="careers-form__label" for="country">Country <span aria-hidden="true">*</span></label>
+                    <input class="careers-form__input" type="text" id="country" name="country" placeholder="e.g. UAE" required>
+                    <span class="careers-form__error" data-error-for="country"></span>
+                  </div>
                   <div class="careers-form__field careers-form__field--full">
-                    <label class="careers-form__label" for="location">Location <span aria-hidden="true">*</span></label>
-                    <input class="careers-form__input" type="text" id="location" name="location" placeholder="City, country" autocomplete="address-level2" required>
-                    <span class="careers-form__error" data-error-for="location"></span>
+                    <label class="careers-form__label" for="nationality">Nationality <span aria-hidden="true">*</span></label>
+                    <input class="careers-form__input" type="text" id="nationality" name="nationality" placeholder="e.g. Emirati, British, Indian" required>
+                    <span class="careers-form__error" data-error-for="nationality"></span>
                   </div>
                   <div class="careers-form__field careers-form__field--full">
                     <label class="careers-form__label" for="linkedin">LinkedIn <span class="careers-form__optional">(optional)</span></label>
                     <input class="careers-form__input" type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/..." autocomplete="url">
                     <span class="careers-form__error" data-error-for="linkedin"></span>
                   </div>
-                  <div class="careers-form__field">
+                  <div class="careers-form__field careers-form__field--full">
+                    <label class="careers-form__label" for="designation">Designation <span aria-hidden="true">*</span></label>
+                    <div class="careers-form__combobox">
+                      <input class="careers-form__input combobox-input" type="text" id="designation" name="designation" placeholder="Select or type your designation" autocomplete="off" required>
+                      <div class="combobox-dropdown" id="designation-dropdown" hidden>
+                        <div class="combobox-option" data-value="Academic Advisor">Academic Advisor</div><div class="combobox-option" data-value="Accounts Payable Specialist">Accounts Payable Specialist</div><div class="combobox-option" data-value="AI/ML Engineer">AI/ML Engineer</div><div class="combobox-option" data-value="Automation Engineer">Automation Engineer</div><div class="combobox-option" data-value="Barista">Barista</div><div class="combobox-option" data-value="BIM Manager">BIM Manager</div><div class="combobox-option" data-value="Business Development Manager">Business Development Manager</div><div class="combobox-option" data-value="Buyer">Buyer</div><div class="combobox-option" data-value="Cashier">Cashier</div><div class="combobox-option" data-value="Civil Engineer">Civil Engineer</div><div class="combobox-option" data-value="Cloud Architect">Cloud Architect</div><div class="combobox-option" data-value="Compliance Officer">Compliance Officer</div><div class="combobox-option" data-value="Content Strategist">Content Strategist</div><div class="combobox-option" data-value="Credit Analyst">Credit Analyst</div><div class="combobox-option" data-value="Customer Service Agent">Customer Service Agent</div><div class="combobox-option" data-value="Cybersecurity Specialist">Cybersecurity Specialist</div><div class="combobox-option" data-value="Data Analyst">Data Analyst</div><div class="combobox-option" data-value="Data Entry Operator">Data Entry Operator</div><div class="combobox-option" data-value="Data Scientist">Data Scientist</div><div class="combobox-option" data-value="Delivery Driver">Delivery Driver</div><div class="combobox-option" data-value="Digital Marketing Specialist">Digital Marketing Specialist</div><div class="combobox-option" data-value="Distribution Manager">Distribution Manager</div><div class="combobox-option" data-value="E-commerce Manager">E-commerce Manager</div><div class="combobox-option" data-value="Electrical Engineer">Electrical Engineer</div><div class="combobox-option" data-value="Electrician">Electrician</div><div class="combobox-option" data-value="Email Marketing Specialist">Email Marketing Specialist</div><div class="combobox-option" data-value="Estimator">Estimator</div><div class="combobox-option" data-value="Executive Chef">Executive Chef</div><div class="combobox-option" data-value="Financial Analyst">Financial Analyst</div><div class="combobox-option" data-value="Freight Forwarder">Freight Forwarder</div><div class="combobox-option" data-value="Full-Stack Developer">Full-Stack Developer</div><div class="combobox-option" data-value="Guest Service Assistant">Guest Service Assistant</div><div class="combobox-option" data-value="Healthcare Administrator">Healthcare Administrator</div><div class="combobox-option" data-value="Hotel Receptionist">Hotel Receptionist</div><div class="combobox-option" data-value="HR Generalist">HR Generalist</div><div class="combobox-option" data-value="HR Officer">HR Officer</div><div class="combobox-option" data-value="HVAC Technician">HVAC Technician</div><div class="combobox-option" data-value="ICU Nurse">ICU Nurse</div><div class="combobox-option" data-value="Import/Export Specialist">Import/Export Specialist</div><div class="combobox-option" data-value="Interior Designer">Interior Designer</div><div class="combobox-option" data-value="Inventory Controller">Inventory Controller</div><div class="combobox-option" data-value="Investment Banker">Investment Banker</div><div class="combobox-option" data-value="IT Support Technician">IT Support Technician</div><div class="combobox-option" data-value="Key Account Manager">Key Account Manager</div><div class="combobox-option" data-value="Legal Assistant">Legal Assistant</div><div class="combobox-option" data-value="Logistics Coordinator">Logistics Coordinator</div><div class="combobox-option" data-value="Management Accountant">Management Accountant</div><div class="combobox-option" data-value="Marketing Coordinator">Marketing Coordinator</div><div class="combobox-option" data-value="Mechanical Engineer">Mechanical Engineer</div><div class="combobox-option" data-value="Medical Laboratory Technician">Medical Laboratory Technician</div><div class="combobox-option" data-value="Merchandiser">Merchandiser</div><div class="combobox-option" data-value="Network Engineer">Network Engineer</div><div class="combobox-option" data-value="Office Administrator">Office Administrator</div><div class="combobox-option" data-value="Paralegal">Paralegal</div><div class="combobox-option" data-value="Payroll Officer">Payroll Officer</div><div class="combobox-option" data-value="Performance Marketing Analyst">Performance Marketing Analyst</div><div class="combobox-option" data-value="Pharmacist">Pharmacist</div><div class="combobox-option" data-value="Physiotherapist">Physiotherapist</div><div class="combobox-option" data-value="Procurement Specialist">Procurement Specialist</div><div class="combobox-option" data-value="Product Manager">Product Manager</div><div class="combobox-option" data-value="Project Coordinator">Project Coordinator</div><div class="combobox-option" data-value="Project Engineer">Project Engineer</div><div class="combobox-option" data-value="Project Manager">Project Manager</div><div class="combobox-option" data-value="QA/QC Engineer">QA/QC Engineer</div><div class="combobox-option" data-value="Quantity Surveyor">Quantity Surveyor</div><div class="combobox-option" data-value="Real Estate Agent">Real Estate Agent</div><div class="combobox-option" data-value="Recruitment Consultant">Recruitment Consultant</div><div class="combobox-option" data-value="Renewable Energy Engineer">Renewable Energy Engineer</div><div class="combobox-option" data-value="Retail Sales Associate">Retail Sales Associate</div><div class="combobox-option" data-value="Risk Analyst">Risk Analyst</div><div class="combobox-option" data-value="Sales Coordinator">Sales Coordinator</div><div class="combobox-option" data-value="Site Engineer">Site Engineer</div><div class="combobox-option" data-value="Social Media Specialist">Social Media Specialist</div><div class="combobox-option" data-value="Software Developer">Software Developer</div><div class="combobox-option" data-value="Store Manager">Store Manager</div><div class="combobox-option" data-value="Supply Chain Analyst">Supply Chain Analyst</div><div class="combobox-option" data-value="Talent Acquisition Specialist">Talent Acquisition Specialist</div><div class="combobox-option" data-value="Telecaller">Telecaller</div><div class="combobox-option" data-value="Treasury Analyst">Treasury Analyst</div><div class="combobox-option" data-value="UI/UX Designer">UI/UX Designer</div><div class="combobox-option" data-value="Visual Merchandiser">Visual Merchandiser</div><div class="combobox-option" data-value="Warehouse Supervisor">Warehouse Supervisor</div><div class="combobox-option" data-value="Wealth Manager">Wealth Manager</div>
+                      </div>
+                    </div>
+                    <span class="careers-form__error" data-error-for="designation"></span>
+                  </div>
+                  <div class="careers-form__field careers-form__field--full">
                     <label class="careers-form__label" for="area">Area of interest <span aria-hidden="true">*</span></label>
-                    <select class="careers-form__input careers-form__select" id="area" name="area" required>
-                      <option value="" disabled selected>Select an area</option>
-                      <option value="Recruitment">Recruitment</option><option value="Consultancy">Consultancy</option><option value="Operations">Operations</option><option value="Business Development">Business Development</option><option value="Other">Other</option>
-                    </select>
+                    <div class="careers-form__combobox">
+                      <input class="careers-form__input combobox-input" type="text" id="area" name="area" placeholder="Select or type your area of interest" autocomplete="off" required>
+                      <div class="combobox-dropdown" id="area-dropdown" hidden>
+                        <div class="combobox-option" data-value="Accounting and Finance">Accounting and Finance</div><div class="combobox-option" data-value="Aerospace and Aviation">Aerospace and Aviation</div><div class="combobox-option" data-value="Artificial Intelligence and Technology">Artificial Intelligence and Technology</div><div class="combobox-option" data-value="Construction and Civil Engineering">Construction and Civil Engineering</div><div class="combobox-option" data-value="Cybersecurity">Cybersecurity</div><div class="combobox-option" data-value="E-commerce and Logistics">E-commerce and Logistics</div><div class="combobox-option" data-value="Education and Academia">Education and Academia</div><div class="combobox-option" data-value="Event Management and Tourism">Event Management and Tourism</div><div class="combobox-option" data-value="Healthcare and Pharmaceuticals">Healthcare and Pharmaceuticals</div><div class="combobox-option" data-value="Hospitality and Culinary Arts">Hospitality and Culinary Arts</div><div class="combobox-option" data-value="Human Resources and Recruitment">Human Resources and Recruitment</div><div class="combobox-option" data-value="Legal and Compliance">Legal and Compliance</div><div class="combobox-option" data-value="Luxury Retail and Fashion">Luxury Retail and Fashion</div><div class="combobox-option" data-value="Marine and Shipping">Marine and Shipping</div><div class="combobox-option" data-value="Marketing and Digital Media">Marketing and Digital Media</div><div class="combobox-option" data-value="Oil, Gas, and Renewable Energy">Oil, Gas, and Renewable Energy</div><div class="combobox-option" data-value="Real Estate and Property Management">Real Estate and Property Management</div><div class="combobox-option" data-value="Supply Chain and Procurement">Supply Chain and Procurement</div>
+                      </div>
+                    </div>
                     <span class="careers-form__error" data-error-for="area"></span>
                   </div>
-                  <div class="careers-form__field">
+                  <div class="careers-form__field careers-form__field--full">
                     <label class="careers-form__label" for="experience">Years of experience <span aria-hidden="true">*</span></label>
                     <select class="careers-form__input careers-form__select" id="experience" name="experience" required>
                       <option value="" disabled selected>Select experience</option>
@@ -165,8 +204,8 @@
                     <span class="careers-form__error" data-error-for="experience"></span>
                   </div>
                   <div class="careers-form__field careers-form__field--full">
-                    <label class="careers-form__label" for="message">Why PeopleBrücke? <span aria-hidden="true">*</span></label>
-                    <textarea class="careers-form__input careers-form__textarea" id="message" name="message" rows="5" required></textarea>
+                    <label class="careers-form__label" for="message">Remarks <span class="careers-form__optional">(optional)</span></label>
+                    <textarea class="careers-form__input careers-form__textarea" id="message" name="message" rows="5"></textarea>
                     <span class="careers-form__error" data-error-for="message"></span>
                   </div>
                   <div class="careers-form__field careers-form__field--full">
@@ -208,7 +247,6 @@
         <div class="site-footer__main-content">
           <ul class="site-footer__locations">
             <li class="site-footer__location"><h3>UAE</h3><address>Regional Operations</address></li>
-            <li class="site-footer__location"><h3>Corridor</h3><address>India-UAE Market Corridor</address></li>
           </ul>
           <ul class="site-footer__contact">
             <li class="site-footer__contact-item">
