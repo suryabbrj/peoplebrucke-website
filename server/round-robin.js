@@ -34,8 +34,12 @@ function readCounterFile() {
 }
 
 function writeCounterFile(count) {
-  ensureDataDir();
-  fs.writeFileSync(COUNTER_PATH, JSON.stringify({ count }, null, 2));
+  try {
+    ensureDataDir();
+    fs.writeFileSync(COUNTER_PATH, JSON.stringify({ count }, null, 2));
+  } catch (err) {
+    console.warn('Unable to write local round-robin counter file (read-only filesystem):', err.message);
+  }
 }
 
 async function readCounterBlobs() {
@@ -55,6 +59,13 @@ async function writeCounterBlobs(count) {
 async function getNextRecipient(teamEmails) {
   if (!teamEmails.length) {
     throw new Error('TEAM_EMAILS is not configured');
+  }
+
+  // If running on Vercel or other non-Netlify serverless runtimes, use the time-based fallback directly.
+  // There is no persistent local file storage on Vercel functions.
+  if (process.env.VERCEL || (process.env.AWS_LAMBDA_FUNCTION_NAME && !process.env.NETLIFY)) {
+    const index = Math.floor(Date.now() / (60 * 60 * 1000)) % teamEmails.length;
+    return teamEmails[index];
   }
 
   let count;
